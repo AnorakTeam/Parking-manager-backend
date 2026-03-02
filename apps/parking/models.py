@@ -1,6 +1,7 @@
 from django.db import models
 
-# Write your models here
+# Slots that are OCCUPIED or EXPIRED have start_date/finish_date; FREE slots have these null.
+
 
 class ParkingSlot(models.Model):
     class Status(models.TextChoices):
@@ -20,6 +21,8 @@ class ParkingSlot(models.Model):
         default=Status.FREE,
     )
     vehicle_model = models.CharField(max_length=100, blank=True)
+    start_date = models.DateTimeField(null=True, blank=True)
+    finish_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["line", "position"]

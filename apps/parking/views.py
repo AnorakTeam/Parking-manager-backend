@@ -36,13 +36,15 @@ class ParkingSlotDetailView(generics.RetrieveAPIView):
 
 
 class ParkingSlotFreeView(APIView):
-    """Free the slot: set status to FREE and clear vehicle_model."""
+    """Free the slot: set status to FREE and clear vehicle_model, start_date, finish_date."""
 
     def post(self, request, pk):
         slot = get_object_or_404(ParkingSlot, pk=pk)
         slot.status = ParkingSlot.Status.FREE
         slot.vehicle_model = ""
-        slot.save()
+        slot.start_date = None
+        slot.finish_date = None
+        slot.save(update_fields=["status", "vehicle_model", "start_date", "finish_date"])
         return Response(
             ParkingSlotSerializer(slot).data,
             status=http_status.HTTP_200_OK,
