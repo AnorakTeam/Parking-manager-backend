@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.contrib.auth import login
 from django.middleware.csrf import get_token
 from rest_framework import status as http_status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,9 +13,7 @@ def api_root(request):
     return HttpResponse(
         """
         <html>
-            <head>
-                <title>Parking Manager API</title>
-            </head>
+            <head><title>Parking Manager API</title></head>
             <body>
                 <h1>Parking Manager API</h1>
                 <p>And... Hello world, sure.</p>
@@ -25,7 +24,8 @@ def api_root(request):
 
 
 class UserRegistrationView(APIView):
-    """Create a new user (register). Accepts username, password, optional email. Logs the user in on success."""
+    """Registrar nuevo usuario y loguearlo automáticamente."""
+    permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data)
@@ -39,7 +39,8 @@ class UserRegistrationView(APIView):
 
 
 class CsrfTokenView(APIView):
-    """Return the CSRF token so the frontend can send it on subsequent POST/PATCH/DELETE. Call with credentials."""
+    """Devuelve el CSRF token. Debe ser público para que el frontend pueda obtenerlo antes del login."""
+    permission_classes = [AllowAny]
 
     def get(self, request):
         token = get_token(request)

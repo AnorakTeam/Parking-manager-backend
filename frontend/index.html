@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>ParkManager - Login</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0f1e;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 36px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .brand {
+            display: flex; align-items: center;
+            gap: 12px; margin-bottom: 28px;
+            justify-content: center;
+        }
+        .brand-icon {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 10px; padding: 8px 11px; font-size: 1.4rem;
+        }
+        .brand h1 { font-size: 1.4rem; font-weight: 700; }
+        .brand span { font-size: 0.75rem; color: #64748b; display: block; }
+
+        .tabs {
+            display: flex; gap: 4px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 9px; padding: 4px; margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1; padding: 9px; border: none;
+            border-radius: 7px; font-size: 0.85rem;
+            font-weight: 500; cursor: pointer;
+            background: transparent; color: #64748b; transition: all 0.2s;
+        }
+        .tab.active { background: #3b82f6; color: white; }
+
+        .field { position: relative; margin-bottom: 12px; }
+        .field-icon {
+            position: absolute; left: 13px; top: 50%;
+            transform: translateY(-50%); pointer-events: none;
+        }
+        .field input {
+            width: 100%; padding: 12px 14px 12px 40px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 9px; color: #e2e8f0; font-size: 0.92rem;
+            transition: border 0.2s;
+        }
+        .field input:focus {
+            outline: none; border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+        .field input::placeholder { color: #475569; }
+
+        #auth-btn {
+            width: 100%; padding: 12px; margin-top: 4px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border: none; border-radius: 9px;
+            color: white; font-size: 0.92rem; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(59,130,246,0.3);
+        }
+        #auth-btn:hover { transform: translateY(-1px); }
+
+        #msg {
+            margin-top: 14px; font-size: 0.83rem;
+            text-align: center; min-height: 18px;
+        }
+        #msg.error { color: #f87171; }
+        #msg.success { color: #4ade80; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="brand">
+        <span class="brand-icon">🅿</span>
+        <div>
+            <h1>ParkManager</h1>
+            <span>Sistema de gestión de estacionamientos</span>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button type="button" class="tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
+        <button type="button" class="tab" id="tab-register" onclick="switchTab('register')">Registrarse</button>
+    </div>
+
+    <div class="field">
+        <span class="field-icon">👤</span>
+        <input type="text" id="input-username" placeholder="Nombre de usuario">
+    </div>
+    <div class="field">
+        <span class="field-icon">🔒</span>
+        <input type="password" id="input-password" placeholder="Contraseña">
+    </div>
+
+    <button type="button" id="auth-btn">Iniciar sesión</button>
+    <div id="msg"></div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+let mode = "login";
+
+function switchTab(tab) {
+    mode = tab;
+    document.getElementById("tab-login").classList.toggle("active", tab === "login");
+    document.getElementById("tab-register").classList.toggle("active", tab === "register");
+    document.getElementById("auth-btn").textContent = tab === "login" ? "Iniciar sesión" : "Crear cuenta";
+    setMsg("");
+}
+
+function setMsg(text, type = "") {
+    const el = document.getElementById("msg");
+    el.textContent = text;
+    el.className = type;
+}
+
+async function getCSRF() {
+    const res = await fetch(`${API}/api/auth/csrf/`, { credentials: "include" });
+    const data = await res.json();
+    return data.csrfToken;
+}
+
+async function handleAuth() {
+    const username = document.getElementById("input-username").value.trim();
+    const password = document.getElementById("input-password").value.trim();
+
+    if (!username || !password) { setMsg("Completa todos los campos", "error"); return; }
+
+    if (mode === "register") {
+        await doRegister(username, password);
+    } else {
+        await doLogin(username, password);
+    }
+}
+
+async function doRegister(username, password) {
+    try {
+        const csrf = await getCSRF();
+        const res = await fetch(`${API}/api/auth/register/`, {
+            method: "POST", credentials: "include",
+            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+            body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            sessionStorage.setItem("username", username);
+            window.location.href = "dashboard.html";
+        } else {
+            setMsg(data.username?.[0] || "Error al registrar", "error");
+        }
+    } catch (e) {
+        setMsg("Error de conexión", "error");
+    }
+}
+
+async function doLogin(username, password) {
+    try {
+        const csrf = await getCSRF();
+        const body = new URLSearchParams({ username, password });
+
+        const res = await fetch(`${API}/accounts/login/`, {
+            method: "POST", credentials: "include",
+            redirect: "manual",
+            headers: { "Content-Type": "application/x-www-form-urlencoded", "X-CSRFToken": csrf },
+            body
+        });
+
+        if (res.status === 200) {
+            setMsg("Usuario o contraseña incorrectos", "error");
+        } else {
+            sessionStorage.setItem("username", username);
+            window.location.href = "dashboard.html";
+        }
+    } catch (e) {
+        setMsg("Error de conexión", "error");
+    }
+}
+
+document.getElementById("auth-btn").addEventListener("click", handleAuth);
+document.getElementById("input-username").addEventListener("keydown", e => { if (e.key === "Enter") handleAuth(); });
+document.getElementById("input-password").addEventListener("keydown", e => { if (e.key === "Enter") handleAuth(); });
+</script>
+</body>
+</html>
