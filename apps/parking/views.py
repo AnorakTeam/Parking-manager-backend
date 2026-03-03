@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework import status as http_status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 from apps.parking.models import ParkingSlot
@@ -36,7 +37,9 @@ class ParkingSlotDetailView(generics.RetrieveAPIView):
 
 
 class ParkingSlotFreeView(APIView):
-    """Free the slot: set status to FREE and clear vehicle_model, start_date, finish_date."""
+    """Free the slot: set status to FREE and clear vehicle_model, start_date, finish_date, owner. Requires auth."""
+
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         slot = get_object_or_404(ParkingSlot, pk=pk)
@@ -44,7 +47,8 @@ class ParkingSlotFreeView(APIView):
         slot.vehicle_model = ""
         slot.start_date = None
         slot.finish_date = None
-        slot.save(update_fields=["status", "vehicle_model", "start_date", "finish_date"])
+        slot.owner = None
+        slot.save(update_fields=["status", "vehicle_model", "start_date", "finish_date", "owner"])
         return Response(
             ParkingSlotSerializer(slot).data,
             status=http_status.HTTP_200_OK,
@@ -52,17 +56,24 @@ class ParkingSlotFreeView(APIView):
 
 
 class ParkingSlotOccupyView(APIView):
-    """Occupy the slot: set status to OCCUPIED and store vehicle_model."""
+    """Occupy the slot: set status to OCCUPIED, store vehicle_model, set owner to current user. Slot must be FREE."""
+
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         slot = get_object_or_404(ParkingSlot, pk=pk)
+        if slot.status != ParkingSlot.Status.FREE:
+            return Response(
+                {"detail": "Slot is not free. Only FREE slots can be occupied."},
+                status=http_status.HTTP_409_CONFLICT,
+            )
         serializer = ParkingSlotOccupySerializer(
             slot,
             data=request.data,
             partial=True,
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(owner=request.user)
         return Response(
             ParkingSlotSerializer(slot).data,
             status=http_status.HTTP_200_OK,

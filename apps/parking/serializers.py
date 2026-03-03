@@ -34,7 +34,7 @@ class ParkingSlotOccupySerializer(serializers.ModelSerializer):
         model = ParkingSlot
         fields = ["vehicle_model", "start_date", "finish_date"]
 
-    def update(self, instance, validated_data):
+    def update(self, instance, validated_data, **kwargs):
         from django.utils import timezone
         from datetime import timedelta
 
@@ -43,10 +43,15 @@ class ParkingSlotOccupySerializer(serializers.ModelSerializer):
         finish_date = validated_data.get("finish_date")
         if finish_date is None:
             finish_date = start_date + timedelta(hours=24)
+        owner = kwargs.get("owner")
 
         instance.vehicle_model = vehicle_model
         instance.start_date = start_date
         instance.finish_date = finish_date
         instance.status = ParkingSlot.Status.OCCUPIED
-        instance.save(update_fields=["vehicle_model", "start_date", "finish_date", "status"])
+        if owner is not None:
+            instance.owner = owner
+        instance.save(
+            update_fields=["vehicle_model", "start_date", "finish_date", "status", "owner"]
+        )
         return instance

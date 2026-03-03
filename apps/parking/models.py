@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.db import models
 
-# Slots that are OCCUPIED or EXPIRED have start_date/finish_date; FREE slots have these null.
+# Slots that are OCCUPIED or EXPIRED have start_date/finish_date and owner; FREE slots have these null.
+# Owner is not exposed in list/detail API responses.
 
 
 class ParkingSlot(models.Model):
@@ -23,6 +25,13 @@ class ParkingSlot(models.Model):
     vehicle_model = models.CharField(max_length=100, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     finish_date = models.DateTimeField(null=True, blank=True)
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="parking_slots",
+    )
 
     class Meta:
         ordering = ["line", "position"]

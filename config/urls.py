@@ -19,7 +19,8 @@ from django.urls import include, path
 from config.views import api_root
 
 urlpatterns = [
-    path('', api_root),
+    path("", api_root),
+    path("accounts/", include("django.contrib.auth.urls")),
     path("api/parking/", include("apps.parking.urls")),
-    path('admin/', admin.site.urls),
+    path("admin/", admin.site.urls),
 ]

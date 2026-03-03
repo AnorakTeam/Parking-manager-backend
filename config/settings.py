@@ -121,3 +121,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Django REST Framework: use session auth for API (works with Django login)
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.AllowAny",  # per-view override for protected endpoints
+    ],
+}
+
+# Required for redirect after login (e.g. admin / API usage from browser)
+LOGIN_REDIRECT_URL = "/"
+LOGIN_URL = "/accounts/login/"
