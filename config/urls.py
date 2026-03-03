@@ -16,11 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-from config.views import api_root
+from config.views import api_root, UserRegistrationView, CsrfTokenView
 
 urlpatterns = [
     path("", api_root),
     path("accounts/", include("django.contrib.auth.urls")),
+    path("api/auth/csrf/", CsrfTokenView.as_view(), name="csrf-token"),
+    path("api/auth/register/", UserRegistrationView.as_view(), name="user-register"),
     path("api/parking/", include("apps.parking.urls")),
     path("admin/", admin.site.urls),
 ]
