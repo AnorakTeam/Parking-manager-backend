@@ -1,0 +1,133 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0f1e; color: #e2e8f0; min-height: 100vh;
+        }
+        .app { max-width: 1000px; margin: auto; padding: 30px 20px; }
+
+        header {
+            display: flex; align-items: center;
+            justify-content: space-between;
+            background: rgba(30,41,59,0.8);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px; padding: 16px 24px;
+            margin-bottom: 28px;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-radius: 10px; padding: 8px 11px; font-size: 1.4rem;
+        }
+        .brand h1 { font-size: 1.3rem; font-weight: 700; }
+        .brand span { font-size: 0.75rem; color: #64748b; display: block; }
+
+        .user-badge {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.25);
+            border-radius: 10px; padding: 8px 14px;
+        }
+        .avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem;
+        }
+        .user-info { display: flex; flex-direction: column; }
+        .user-info small { font-size: 0.65rem; color: #64748b; text-transform: uppercase; }
+        .user-info strong { font-size: 0.88rem; color: #93c5fd; }
+
+        #btn-logout {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.25);
+            color: #f87171; border-radius: 7px;
+            padding: 5px 12px; font-size: 0.8rem;
+            cursor: pointer; transition: background 0.2s;
+        }
+        #btn-logout:hover { background: rgba(239,68,68,0.22); }
+
+        .section {
+            background: rgba(15,23,42,0.8);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 18px; padding: 28px;
+        }
+        .slots-top {
+            display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap;
+            gap: 12px; margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1rem; font-weight: 600; color: #cbd5e1;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .pills { display: flex; gap: 8px; }
+        .pill {
+            font-size: 0.75rem; font-weight: 600;
+            padding: 4px 12px; border-radius: 999px;
+        }
+        .pill.free { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25); }
+        .pill.occ  { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.25); }
+
+        #btn-refresh {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #94a3b8; border-radius: 8px;
+            padding: 7px 14px; font-size: 0.8rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        #btn-refresh:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 14px;
+        }
+        .slot-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 13px; padding: 16px;
+            position: relative; overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .slot-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.3); }
+        .slot-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+        }
+        .slot-card.free::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .slot-card.occ::before  { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .slot-label { font-size: 0.65rem; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+        .slot-num   { font-size: 1.4rem; font-weight: 700; color: #e2e8f0; margin: 4px 0 10px; }
+        .slot-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 0.72rem; font-weight: 600;
+            padding: 3px 9px; border-radius: 999px; margin-bottom: 14px;
+        }
+        .slot-badge.free { background: rgba(34,197,94,0.12); color: #4ade80; }
+        .slot-badge.occ  { background: rgba(239,68,68,0.12);  color: #f87171; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; }
+        .slot-badge.free .dot { background: #4ade80; }
+        .slot-badge.occ  .dot { background: #f87171; }
+
+        .slot-actions { display: flex; gap: 7px; }
+        .slot-btn {
+            flex: 1; padding: 6px 8px; border: none;
+            border-radius: 7px; font-size: 0.75rem;
+            font-weight: 600; cursor: pointer; transition: background 0.2s;
+        }
+        .slot-btn.occupy  { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+        .slot-btn.occupy:hover { background: rgba(34,197,94,0.25); }
+        .slot-btn.release { background: rgba(239,68,68,0.1);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .slot-btn.release:hover { background: rgba(239,68,68,0.22); }
+
+        #toast {
+            position: fixed; bottom: 24px; right: 24px;
+            padding: 11px 18px; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 500;
+            opacity: 0; transform: translateY(8px);
+            transition: all 0.3s; pointer-events: none; z-index: 999;
+        }
+        #toast.show { opacity: 1; transform: translateY(0); }
+        #toast.success { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+        #toast.error   { background: rgba(239,68,68,0.15);  border: 1px solid rgba(239,68,68,0.3);  color: #f87171; }
