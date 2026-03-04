@@ -2,10 +2,10 @@
 Realizado para la actividad #1 del curso de Desarrollo de aplicaciones basadas en microservicios 2026-I.
 
 Estudiantes:
-- josemanuelpr@ufps.edu.co - 1152375
-- .
-- .
-- .
+- José Manuel Pérez Rodríguez - 1152375
+- Erika Alejandra Sánchez Soto - 1152208
+- Yarley Gilmar Guillen Rico - 1152180
+- Nefer Sneyder Rojas Porras - 1152307
 
 Se encarga de la lógica del manejo de un parking. 
 
