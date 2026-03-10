@@ -11,9 +11,14 @@ Se encarga de la lógica del manejo de un parking.
 
 El parking consiste de 3 líneas con 10 slots cada una, donde se aparcan vehículos en general.
 
-Enlace a los recursos en drive:
+## Modo de uso (sin autenticación)
 
-Haz un PDF con el link del repositorio 
-Y a su vez está carpeta
+Este backend corre en **modo single-user**: no existe login, registro ni usuarios. El frontend abre directamente el panel (`frontend/dashboard.html`) y consume el API público:
+
+- `GET /api/parking/slots/`
+- `POST /api/parking/slots/<id>/occupy/`
+- `POST /api/parking/slots/<id>/free/`
+
+Enlace a los recursos en drive:
 
 https://drive.google.com/drive/folders/1iXF6Y5r_CcFYJcO7W62of209Db2CnXis

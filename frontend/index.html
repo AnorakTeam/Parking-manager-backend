@@ -2,37 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>ParkManager - Login</title>
-   <link rel="stylesheet" href="login.css">
+    <title>ParkManager</title>
 </head>
 <body>
-<div class="card">
-    <div class="brand">
-        <span class="brand-icon">🅿</span>
-        <div>
-            <h1>ParkManager</h1>
-            <span>Sistema de gestión de estacionamientos</span>
-        </div>
-    </div>
-
-    <div class="tabs">
-        <button type="button" class="tab active" id="tab-login" onclick="switchTab('login')">Iniciar sesión</button>
-        <button type="button" class="tab" id="tab-register" onclick="switchTab('register')">Registrarse</button>
-    </div>
-
-    <div class="field">
-        <span class="field-icon">👤</span>
-        <input type="text" id="input-username" placeholder="Nombre de usuario">
-    </div>
-    <div class="field">
-        <span class="field-icon">🔒</span>
-        <input type="password" id="input-password" placeholder="Contraseña">
-    </div>
-
-    <button type="button" id="auth-btn">Iniciar sesión</button>
-    <div id="msg"></div>
-</div>
-
-<script src="login.js"></script>
+<script>
+    // Single-user mode: go straight to the dashboard.
+    window.location.replace("dashboard.html");
+</script>
 </body>
 </html>

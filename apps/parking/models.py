@@ -9,7 +9,6 @@ class ParkingSlot(models.Model):
     class Status(models.TextChoices):
         FREE = "FREE", "Free"
         OCCUPIED = "OCCUPIED", "Occupied"
-        EXPIRED = "EXPIRED", "Expired"
 
     LINE_CHOICES = [(i, str(i)) for i in range(1, 4)]
     POSITION_CHOICES = [(i, str(i)) for i in range(1, 11)] 
@@ -22,16 +21,10 @@ class ParkingSlot(models.Model):
         choices=Status.choices,
         default=Status.FREE,
     )
-    vehicle_model = models.CharField(max_length=100, blank=True)
     start_date = models.DateTimeField(null=True, blank=True)
     finish_date = models.DateTimeField(null=True, blank=True)
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="parking_slots",
-    )
+    
+    owner_id = models.IntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ["line", "position"]

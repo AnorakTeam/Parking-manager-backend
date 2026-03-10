@@ -1,12 +1,8 @@
 const API = "http://127.0.0.1:8000";
 
-// Leer usuario guardado al hacer login
-const username = sessionStorage.getItem("username");
-if (!username) {
-    window.location.href = "index.html";
-}
-document.getElementById("avatar").textContent = username[0].toUpperCase();
-document.getElementById("username-display").textContent = username;
+// Single-user mode: no login/session required
+document.getElementById("avatar").textContent = "P";
+document.getElementById("username-display").textContent = "Operador único";
 
 function toast(msg, type = "success") {
     const t = document.getElementById("toast");
@@ -15,19 +11,11 @@ function toast(msg, type = "success") {
     setTimeout(() => t.className = "", 3000);
 }
 
-async function getCSRF() {
-    const res = await fetch(`${API}/api/auth/csrf/`, { credentials: "include" });
-    const data = await res.json();
-    return data.csrfToken;
-}
-
 async function loadSlots() {
     try {
-        const res = await fetch(`${API}/api/parking/slots/`, { credentials: "include" });
+        const res = await fetch(`${API}/api/parking/slots/`);
         if (!res.ok) {
-            // Sesión expirada
-            sessionStorage.removeItem("username");
-            window.location.href = "index.html";
+            toast("Error al cargar espacios", "error");
             return;
         }
         const data = await res.json();
@@ -62,11 +50,10 @@ async function loadSlots() {
 
 async function occupy(id) {
     try {
-        const csrf = await getCSRF();
         const res = await fetch(`${API}/api/parking/slots/${id}/occupy/`, {
-            method: "POST", credentials: "include",
-            headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
-            body: JSON.stringify({ vehicle_model: "Auto desde frontend" })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({})
         });
         res.ok ? toast(`Espacio #${id} ocupado`) : toast("Error al ocupar", "error");
         loadSlots();
@@ -75,30 +62,14 @@ async function occupy(id) {
 
 async function release(id) {
     try {
-        const csrf = await getCSRF();
         const res = await fetch(`${API}/api/parking/slots/${id}/free/`, {
-            method: "POST", credentials: "include",
-            headers: { "X-CSRFToken": csrf }
+            method: "POST"
         });
         res.ok ? toast(`Espacio #${id} liberado`) : toast("Error al liberar", "error");
         loadSlots();
     } catch (e) { toast("Error de conexión", "error"); }
 }
 
-async function doLogout() {
-    try {
-        const csrf = await getCSRF();
-        await fetch(`${API}/accounts/logout/`, {
-            method: "POST", credentials: "include",
-            redirect: "manual",
-            headers: { "X-CSRFToken": csrf }
-        });
-    } catch (e) {}
-    sessionStorage.removeItem("username");
-    window.location.href = "index.html";
-}
-
-document.getElementById("btn-logout").addEventListener("click", doLogout);
 document.getElementById("btn-refresh").addEventListener("click", loadSlots);
 
 loadSlots();

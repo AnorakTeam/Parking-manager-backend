@@ -2,7 +2,6 @@ from rest_framework import generics
 from rest_framework import status as http_status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 
 from apps.parking.models import ParkingSlot
@@ -14,7 +13,6 @@ from apps.parking.serializers import (
 
 
 class ParkingSlotListView(generics.ListAPIView):
-    """List all parking slots. Optional query: ?line=1|2|3 to filter by line."""
     serializer_class = ParkingSlotSerializer
 
     def get_queryset(self):
@@ -31,35 +29,31 @@ class ParkingSlotListView(generics.ListAPIView):
 
 
 class ParkingSlotDetailView(generics.RetrieveAPIView):
-    """Show all information for a particular slot."""
     queryset = ParkingSlot.objects.all()
     serializer_class = ParkingSlotSerializer
 
 
 class ParkingSlotFreeView(APIView):
-    """Free the slot: set status to FREE and clear vehicle_model, start_date, finish_date, owner. Requires auth."""
-
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, pk):
         slot = get_object_or_404(ParkingSlot, pk=pk)
+
+        if slot.status == ParkingSlot.Status.FREE:
+            return Response(
+                {"detail": "Slot is already free."},
+                status=http_status.HTTP_409_CONFLICT,
+            )
+
         slot.status = ParkingSlot.Status.FREE
-        slot.vehicle_model = ""
         slot.start_date = None
         slot.finish_date = None
-        slot.owner = None
-        slot.save(update_fields=["status", "vehicle_model", "start_date", "finish_date", "owner"])
+        slot.owner_id = None
+        slot.save(update_fields=["status", "start_date", "finish_date", "owner_id"])
         return Response(
             ParkingSlotSerializer(slot).data,
             status=http_status.HTTP_200_OK,
         )
 
-
 class ParkingSlotOccupyView(APIView):
-    """Occupy the slot: set status to OCCUPIED, store vehicle_model, set owner to current user. Slot must be FREE."""
-
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, pk):
         slot = get_object_or_404(ParkingSlot, pk=pk)
         if slot.status != ParkingSlot.Status.FREE:
@@ -73,7 +67,9 @@ class ParkingSlotOccupyView(APIView):
             partial=True,
         )
         serializer.is_valid(raise_exception=True)
-        serializer.save(owner=request.user)
+
+        # Single-user mode: no auth/ownership tracking required.
+        serializer.save(owner=None)
         return Response(
             ParkingSlotSerializer(slot).data,
             status=http_status.HTTP_200_OK,
