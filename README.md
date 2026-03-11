@@ -13,7 +13,7 @@ El parking consiste de 3 líneas con 10 slots cada una, donde se aparcan vehícu
 
 ## Modo de uso (sin autenticación)
 
-Este backend corre en **modo single-user**: no existe login, registro ni usuarios. El frontend abre directamente el panel (`frontend/dashboard.html`) y consume el API público:
+Este backend corre en **modo single-user** por ahora, hasta que implementemos un microservicio exclusivo para auth (Hecho para la actividad de realizar docker images de los servicios actuales). El frontend abre directamente el panel (`frontend/dashboard.html`) y consume la API público:
 
 - `GET /api/parking/slots/`
 - `POST /api/parking/slots/<id>/occupy/`
